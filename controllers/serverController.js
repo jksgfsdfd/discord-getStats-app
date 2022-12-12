@@ -9,6 +9,7 @@ const {
 } = require("../functionalities");
 
 const moment = require("moment");
+const { query } = require("express");
 require("express-async-errors");
 
 async function getServerDetails(req, res) {
@@ -105,6 +106,10 @@ async function piggie_user_stats(req, res) {
   const guildId = req.params.id;
   const username = req.body.username;
   const memberData = await searchGuildMember(guildId, username);
+  if (memberData.length === 0) {
+    res.status(404);
+    throw new Error("Now such user found");
+  }
   const member = memberData[0];
   const userId = member.user.id;
   const userName = member.user.username;
@@ -124,7 +129,20 @@ async function piggie_user_stats(req, res) {
       if (message.author.id != userId) {
         continue;
       }
-      usersMessages.push(message);
+      const minMessage = {};
+      minMessage.channel = channel.name;
+      minMessage.timestamp = message.timestamp;
+      minMessage.content = message.content;
+      if (message.attachments.length) {
+        minMessage.attachments = message.attachments;
+      }
+      if (message.embeds.length) {
+        minMessage.embeds = message.embeds;
+      }
+      if (message.mentions.length) {
+        minMessage.mentions = message.mentions;
+      }
+      usersMessages.push(minMessage);
       if (compareTimeAvg.isBefore(message.timestamp)) {
         monthlyMessageCount++;
       }
@@ -142,6 +160,9 @@ async function piggie_user_stats(req, res) {
 
   const latest5 =
     usersMessages.length < 6 ? usersMessages : usersMessages.slice(-5);
+  latest5.forEach((message) => {
+    message.timestamp = moment(message.timestamp).format("lll");
+  });
 
   const averageMessagePerDay = (monthlyMessageCount / 30).toFixed(2);
   const newData = {};
@@ -149,7 +170,7 @@ async function piggie_user_stats(req, res) {
   newData.username = userName;
   newData.joined_at = joined_at;
   newData.averageMessagePerDay = averageMessagePerDay;
-  newData.latesMessages = latest5;
+  newData.latestMessages = latest5;
   newData.activeChannels = activeChannels;
   //console.log(newData);
   res.status(200).json(newData);
@@ -159,7 +180,14 @@ async function piggie_user_stats(req, res) {
 
 async function piggie_server_stats(req, res) {
   const guildId = req.params.id;
-  const timeframe = req.query.timeframe ? req.query.timeframe : "30";
+  const reqTimeFrame = req.query.timeframe;
+  if (reqTimeFrame) {
+    if (!Number.isInteger(+reqTimeFrame) || reqTimeFrame[0] == "-") {
+      res.status(400);
+      throw new Error("Enter a valid amount of days for timeframe");
+    }
+  }
+  const timeframe = reqTimeFrame ? reqTimeFrame : "30";
   //sorted list of channels with avg message perday , timeframe = 1month
   const data = await getChannelsSortedOnMessageCount(guildId, timeframe);
   data.forEach((element) => {
@@ -173,6 +201,10 @@ async function piggie_server_stats(req, res) {
 async function piggie_channel_stats(req, res) {
   const guildId = req.params.id;
   const channelName = req.query.channel;
+  if (!channelName) {
+    res.status(400);
+    throw new Error("Provide a channel name");
+  }
   const channels = await getTextandVoiceChannels(guildId);
   let neededChannel;
   for (let channel of channels) {
@@ -186,21 +218,52 @@ async function piggie_channel_stats(req, res) {
     throw new Error("No such channel found");
   }
 
-  const timeInDays = 30;
+  const reqTimeFrame = req.query.timeframe;
+  if (reqTimeFrame) {
+    if (!Number.isInteger(+reqTimeFrame) || reqTimeFrame[0] == "-") {
+      res.status(400);
+      throw new Error("Enter a valid amount of days for timeframe");
+    }
+  }
+  const timeInDays = reqTimeFrame ? Number(reqTimeFrame) : 30;
   const compareTime = moment().subtract(timeInDays, "d");
   let channelMessageCount = 0;
   const messagesOfChannel = await viewMessagesInAChannel(neededChannel.id);
+  const activeUserData = {};
   for (let message of messagesOfChannel) {
     if (compareTime.isBefore(message.timestamp)) {
       channelMessageCount++;
+      const author = message.author;
+      if (activeUserData.hasOwnProperty(author.id)) {
+        activeUserData[author.id]["activeMessageCount"]++;
+      } else {
+        activeUserData[author.id] = {
+          username: author.username,
+          activeMessageCount: 1,
+        };
+      }
     }
   }
 
+  const activeUsersList = [];
+  Object.keys(activeUserData).forEach((user) => {
+    activeUsersList.push(activeUserData[user]);
+  });
+
+  activeUsersList.sort((a, b) => {
+    return a.activeMessageCount - b.activeMessageCount;
+  });
+
+  const neededActiveUsers =
+    activeUsersList.length < 6 ? activeUsersList : activeUsersList.slice(-5);
+
   const averageMessagePerDay = (channelMessageCount / timeInDays).toFixed(2);
+
   res.status(200).json({
     id: neededChannel.id,
     name: neededChannel.name,
     averageMessagePerDay: averageMessagePerDay,
+    activeUsers: neededActiveUsers,
   });
 }
 

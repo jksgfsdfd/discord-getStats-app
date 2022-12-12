@@ -17,6 +17,7 @@
     users in each channel no api found.
     timeframe is variable and is now taken to be 1 month
     could instead add user join activity of the server
+    can include userjoin activity
 
 /piggi-channel-stats :- take input as channel name :- and give all the info about particular channel. Total number of users in channel with avg message per day
 

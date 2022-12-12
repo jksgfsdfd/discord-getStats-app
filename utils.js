@@ -20,7 +20,7 @@ async function DiscordRequest(endpoint, options) {
   if (!res.ok) {
     const data = await res.json();
     console.log(res.status);
-    throw new Error(JSON.stringify(data));
+    throw new Error(data.message);
   }
   // return original response
   return res;
