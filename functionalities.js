@@ -34,7 +34,7 @@ async function getGuildChannels(serverId) {
 }
 
 async function getGuildMembers(serverId) {
-  let endpoint = `/guilds/${serverId}/members`;
+  let endpoint = `/guilds/${serverId}/members?limit=1000`;
   const result = await DiscordRequest(endpoint, { method: "GET" });
   const data = await result.json();
   // const writeData = JSON.stringify(data, null, 4);
@@ -48,6 +48,23 @@ async function getGuildMembers(serverId) {
   return data;
 }
 
+async function searchGuildMember(serverId, username) {
+  let endpoint = `/guilds/${serverId}/members/search?query=${username}`;
+  const result = await DiscordRequest(endpoint, { method: "GET" });
+  const data = await result.json();
+  // const writeData = JSON.stringify(data, null, 4);
+  // fs.writeFile("./GuildMember.json", writeData, "utf8", (err) => {
+  //   if (err) {
+  //     console.log(`Error writing file: ${err}`);
+  //   } else {
+  //     console.log(`File is written successfully!`);
+  //   }
+  // });
+  console.log(data);
+  return data;
+}
+
+//searchGuildMember("1044887003868713010", "ronmaa");
 //no use since no additional info is given
 async function getGuildMember(serverId, memberId) {
   let endpoint = `/guilds/${serverId}/members/${memberId}`;
@@ -127,7 +144,7 @@ async function viewUser(userId) {
   return data;
 }
 
-export async function findTotalUsersAndOnlineUsers(guildId) {
+async function findTotalUsersAndOnlineUsers(guildId) {
   const data = await getGuildDetails(guildId);
   const newData = {
     totalUsers: data.approximate_member_count,
@@ -139,29 +156,22 @@ export async function findTotalUsersAndOnlineUsers(guildId) {
 async function getTextandVoiceChannels(guildId) {
   const data = await getGuildChannels(guildId);
   //text == type0 and voice == type2
-  const textChannels = [];
-  const voiceChannels = [];
+  const channels = [];
   data.forEach((channel) => {
-    if (channel.type === 0) {
+    if (channel.type === 0 || channel.type === 2) {
       const { id, name } = channel;
       const minChannel = { id, name };
-      textChannels.push(minChannel);
-    }
-    if (channel.type === 2) {
-      const { id, name } = channel;
-      const minChannel = { id, name };
-      voiceChannels.push(minChannel);
+      channels.push(minChannel);
     }
   });
 
-  const newData = { textChannels, voiceChannels };
-  return newData;
+  return channels;
 }
 
 async function sortChannelsByMessageCountAllTime(guildId) {
   const data = await getTextandVoiceChannels(guildId);
-  const textChannels = await Promise.all(
-    data.textChannels.map(async (channel) => {
+  const channelsWithCount = await Promise.all(
+    data.map(async (channel) => {
       const msgData = await viewMessagesInAChannel(channel.id);
       const nbMsgs = msgData.length;
       channel.nbMsgs = nbMsgs;
@@ -169,25 +179,11 @@ async function sortChannelsByMessageCountAllTime(guildId) {
     })
   );
 
-  const voiceChannels = await Promise.all(
-    data.voiceChannels.map(async (channel) => {
-      const msgData = await viewMessagesInAChannel(channel.id);
-      let nbMsgs = msgData.length;
-      channel.nbMsgs = nbMsgs;
-      return channel;
-    })
-  );
-
-  textChannels.sort((a, b) => {
+  channelsWithCount.sort((a, b) => {
     return a.nbMsgs - b.nbMsgs;
   });
 
-  voiceChannels.sort((a, b) => {
-    return a.nbMsgs - b.nbMsgs;
-  });
-
-  console.log(textChannels);
-  console.log(voiceChannels);
+  return channelsWithCount;
 }
 
 async function getWeekWiseMessageCount(channelId) {
@@ -640,10 +636,52 @@ async function getYearWiseSortedMessageCountChannel(guildId) {
   return sortedYearWiseChannels;
 }
 
-//todo: include all the previous channels in array with count = 0 when i>0
+async function getChannelsSortedOnMessageCount(guildId, timeframeInDays) {
+  const timeInDays = Number(timeframeInDays);
+  const channels = await getTextandVoiceChannels(guildId);
+  const compareTime = moment().subtract(timeInDays, "d");
+  const channelDetails = [];
+  for (let channel of channels) {
+    let channelMessageCount = 0;
+    const messagesOfChannel = await viewMessagesInAChannel(channel.id);
+    for (let message of messagesOfChannel) {
+      if (compareTime.isBefore(message.timestamp)) {
+        channelMessageCount++;
+      }
+    }
+    channelDetails.push({
+      channelName: channel.name,
+      messageCount: channelMessageCount,
+    });
+  }
+
+  channelDetails.sort((a, b) => {
+    return a.messageCount - b.messageCount;
+  });
+
+  channelDetails.forEach((channel) => {
+    channel.averageMessagePerDay = (channel.messageCount / timeInDays).toFixed(
+      2
+    );
+  });
+
+  return channelDetails;
+}
+
+//getChannelsSortedOnMessageCount("1044887003868713010", "30");
 
 //findTotalUsersAndOnlineUsers(process.env.GUILD_ID);
 //sortChannelsByMessageCount(process.env.GUILD_ID);
 //viewMessagesInAChannel("1051400474563182592");
 //getHourWiseUserJoinCount(process.env.GUILD_ID);
 //getYearWiseSortedMessageCountChannel(process.env.GUILD_ID);
+module.exports = {
+  findTotalUsersAndOnlineUsers,
+  getGuildDetails,
+  getTextandVoiceChannels,
+  getChannel,
+  getGuildMembers,
+  viewMessagesInAChannel,
+  searchGuildMember,
+  getChannelsSortedOnMessageCount,
+};

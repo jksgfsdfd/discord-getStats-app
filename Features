@@ -1,0 +1,24 @@
+/piggi-stats :- will tell about all users, active users, online users, avg message per day.
+
+    getAllGuildMembers() , take 1 week message history and find users who have sent message/reacted with emojis , count of online users ,
+    find total message across all channels within a month and find avg message per day
+
+    to check:
+    emoji reactions not considered for activity
+    currently getting user data count limited to 1000
+    bots are also considered normal user
+
+/piggi-user-stats :- will take input of username, then show stats of particular user. Joining date, last 5 messages, active in channels, avg message/day.
+
+    to view message content require Privilage of message_intent
+
+/piggi-server-stats :- sorted list of channels with avg message sent per day and users in each channel.
+
+    users in each channel no api found.
+    timeframe is variable and is now taken to be 1 month
+    could instead add user join activity of the server
+
+/piggi-channel-stats :- take input as channel name :- and give all the info about particular channel. Total number of users in channel with avg message per day
+
+    number of users in channel api not found
+    could instead implement most active user in the channel

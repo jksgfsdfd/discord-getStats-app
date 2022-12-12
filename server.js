@@ -1,9 +1,10 @@
 const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
+const channelRouter = require("./routes/channelRouter");
 const serverRouter = require("./routes/serverRouter");
 
 require("express-async-errors");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
