@@ -9,6 +9,7 @@ const {
 } = require("../functionalities");
 
 const moment = require("moment");
+require("express-async-errors");
 
 async function getServerDetails(req, res) {
   const serverData = await getGuildDetails(req.params.id);
@@ -169,6 +170,40 @@ async function piggie_server_stats(req, res) {
   res.status(200).json({ channelsData: data });
 }
 
+async function piggie_channel_stats(req, res) {
+  const guildId = req.params.id;
+  const channelName = req.query.channel;
+  const channels = await getTextandVoiceChannels(guildId);
+  let neededChannel;
+  for (let channel of channels) {
+    if (channel.name === channelName) {
+      neededChannel = channel;
+      break;
+    }
+  }
+  if (!neededChannel) {
+    res.status(404);
+    throw new Error("No such channel found");
+  }
+
+  const timeInDays = 30;
+  const compareTime = moment().subtract(timeInDays, "d");
+  let channelMessageCount = 0;
+  const messagesOfChannel = await viewMessagesInAChannel(neededChannel.id);
+  for (let message of messagesOfChannel) {
+    if (compareTime.isBefore(message.timestamp)) {
+      channelMessageCount++;
+    }
+  }
+
+  const averageMessagePerDay = (channelMessageCount / timeInDays).toFixed(2);
+  res.status(200).json({
+    id: neededChannel.id,
+    name: neededChannel.name,
+    averageMessagePerDay: averageMessagePerDay,
+  });
+}
+
 //piggie_server_stats("1044887003868713010");
 
 module.exports = {
@@ -176,4 +211,5 @@ module.exports = {
   getServerDetails,
   piggie_user_stats,
   piggie_server_stats,
+  piggie_channel_stats,
 };
