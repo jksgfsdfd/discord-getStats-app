@@ -6,6 +6,7 @@ const {
   viewMessagesInAChannel,
   searchGuildMember,
   getChannelsSortedOnMessageCount,
+  getUsersJoinedWithin,
 } = require("../functionalities");
 
 const moment = require("moment");
@@ -189,13 +190,19 @@ async function piggie_server_stats(req, res) {
   }
   const timeframe = reqTimeFrame ? reqTimeFrame : "30";
   //sorted list of channels with avg message perday , timeframe = 1month
-  const data = await getChannelsSortedOnMessageCount(guildId, timeframe);
-  data.forEach((element) => {
+  const channelsData = await getChannelsSortedOnMessageCount(
+    guildId,
+    timeframe
+  );
+  channelsData.forEach((element) => {
     delete element["messageCount"];
   });
-
   //console.log(data);
-  res.status(200).json({ channelsData: data });
+  const usersJoinData = await getUsersJoinedWithin(guildId, timeframe);
+
+  res
+    .status(200)
+    .json({ channelsData: channelsData, userJoinData: usersJoinData });
 }
 
 async function piggie_channel_stats(req, res) {

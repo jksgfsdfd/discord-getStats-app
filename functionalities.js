@@ -670,6 +670,29 @@ async function getChannelsSortedOnMessageCount(guildId, timeframeInDays) {
 
 //getChannelsSortedOnMessageCount("1044887003868713010", "30");
 
+async function getUsersJoinedWithin(guildId, timeframe) {
+  const timeInDays = Number(timeframe);
+  const members = await getGuildMembers(guildId);
+  const compareTime = moment().subtract(timeInDays, "d");
+  const userDetails = [];
+  for (let member of members) {
+    if (compareTime.isBefore(member.joined_at)) {
+      const minUser = {};
+      minUser.username = member.user.username;
+      minUser.joined_at = moment(member.joined_at).format("lll");
+      userDetails.push(minUser);
+    }
+  }
+
+  const data = {};
+  data.joinedUserCount = userDetails.length;
+  data.joinedUsers = userDetails;
+
+  console.log(data);
+  return data;
+}
+
+//getUsersJoinedWithin("1044887003868713010", "10");
 //findTotalUsersAndOnlineUsers(process.env.GUILD_ID);
 //sortChannelsByMessageCount(process.env.GUILD_ID);
 //viewMessagesInAChannel("1051400474563182592");
@@ -684,4 +707,5 @@ module.exports = {
   viewMessagesInAChannel,
   searchGuildMember,
   getChannelsSortedOnMessageCount,
+  getUsersJoinedWithin,
 };
