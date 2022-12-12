@@ -35,8 +35,16 @@ async function getGuildChannels(serverId) {
 
 async function getGuildMembers(serverId) {
   let endpoint = `/guilds/${serverId}/members?limit=1000`;
-  const result = await DiscordRequest(endpoint, { method: "GET" });
-  const data = await result.json();
+  let result = await DiscordRequest(endpoint, { method: "GET" });
+  let thisRoundData = await result.json();
+  const data = [];
+  while (thisRoundData.length) {
+    data.push(...thisRoundData);
+    const lastId = thisRoundData[thisRoundData.length - 1].user.id;
+    endpoint = `/guilds/${serverId}/members?limit=1000&after=${lastId}`;
+    result = await DiscordRequest(endpoint, { method: "GET" });
+    thisRoundData = await result.json();
+  }
   // const writeData = JSON.stringify(data, null, 4);
   // fs.writeFile("./GuildMembers.json", writeData, "utf8", (err) => {
   //   if (err) {
@@ -45,8 +53,11 @@ async function getGuildMembers(serverId) {
   //     console.log(`File is written successfully!`);
   //   }
   // });
+  console.log(data);
   return data;
 }
+
+getGuildMembers("1044887003868713010");
 
 async function searchGuildMember(serverId, username) {
   let endpoint = `/guilds/${serverId}/members/search?query=${username}`;
