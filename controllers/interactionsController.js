@@ -131,6 +131,17 @@ async function interactionController(req, res) {
       });
 
       return;
+    } else if (name === "test") {
+      await res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "testing ok",
+        },
+      });
+      res.replySent = true;
+      const options = req.body.data.options;
+      console.log(options);
+      return;
     }
   }
 }
