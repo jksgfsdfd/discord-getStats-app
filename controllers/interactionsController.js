@@ -187,6 +187,7 @@ async function interactionController(req, res) {
 
       neededFields.latestMessages = latestMessages.join("\n\n");
 
+      const embedFields = [];
       Object.keys(neededFields).forEach((field) => {
         embedFields.push({ name: field, value: neededFields[field] });
       });
