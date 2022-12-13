@@ -1,5 +1,6 @@
 const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
+const interactionsRouter = require("./routes/interactionsRouter");
 const serverRouter = require("./routes/serverRouter");
 
 require("express-async-errors");
@@ -8,6 +9,7 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use("/interactions", interactionsRouter);
 app.use("/server", serverRouter);
 
 app.use(errorHandler);

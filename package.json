@@ -6,6 +6,7 @@
   "author": "maanas",
   "license": "MIT",
   "dependencies": {
+    "discord-interactions": "^3.2.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
@@ -13,7 +14,7 @@
     "node-fetch": "2.6.6"
   },
   "scripts": {
-    "start" : "yarn nodemon server.js"
+    "start": "yarn nodemon server.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
