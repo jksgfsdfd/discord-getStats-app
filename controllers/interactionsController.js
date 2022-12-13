@@ -27,10 +27,13 @@ async function interactionController(req, res) {
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
 
+      console.log("Entered piggi stats");
       res.replySent = true;
       const guildId = req.body.guild_id;
       const newData = await piggie_stats(guildId);
+      console.log(newData);
       const replyData = JSON.stringify(newData, null, 4);
+      console.log(replyData);
       const interactionToken = req.body.token;
       const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
       const messageObject = {};
