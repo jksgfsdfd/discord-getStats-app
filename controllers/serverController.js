@@ -7,6 +7,7 @@ const {
   searchGuildMember,
   getChannelsSortedOnMessageCount,
   getUsersJoinedWithin,
+  getGuildMember,
 } = require("../functionalities");
 
 const moment = require("moment");
@@ -108,8 +109,7 @@ async function piggie_stats(guildId) {
   return newData;
 }
 //piggie_stats("1044887003868713010");
-
-async function piggie_user_stats(req, res) {
+async function piggie_user_stats_controller(req, res) {
   const guildId = req.params.id;
   const username = req.body.username;
   const memberData = await searchGuildMember(guildId, username);
@@ -119,6 +119,12 @@ async function piggie_user_stats(req, res) {
   }
   const member = memberData[0];
   const userId = member.user.id;
+  const newData = await piggie_user_stats(guildId, userId);
+  res.status(200).json(newData);
+}
+
+async function piggie_user_stats(guildId, userId) {
+  const member = await getGuildMember(guildId, userId);
   const userName = member.user.username;
   const joined_at = moment(member["joined_at"]).format("D MMM YYYY");
   //console.log(joined_at);
@@ -180,7 +186,7 @@ async function piggie_user_stats(req, res) {
   newData.latestMessages = latest5;
   newData.activeChannels = activeChannels;
   //console.log(newData);
-  res.status(200).json(newData);
+  return newData;
 }
 
 //piggie_user_stats("1044887003868713010", "ronmaa");
@@ -295,6 +301,7 @@ module.exports = {
   piggie_stats_controller,
   getServerDetails,
   piggie_user_stats,
+  piggie_user_stats_controller,
   piggie_server_stats,
   piggie_server_stats_controller,
   piggie_channel_stats,

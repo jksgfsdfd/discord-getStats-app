@@ -88,8 +88,11 @@ async function getGuildMember(serverId, memberId) {
   //     console.log(`File is written successfully!`);
   //   }
   // });
+  console.log(data);
   return data;
 }
+
+//getGuildMember("1044887003868713010", "1005929077770821704");
 
 //no use since no additoinal info is given
 async function getChannel(channelId) {
@@ -718,4 +721,5 @@ module.exports = {
   searchGuildMember,
   getChannelsSortedOnMessageCount,
   getUsersJoinedWithin,
+  getGuildMember,
 };

@@ -3,7 +3,11 @@ const {
   InteractionResponseType,
 } = require("discord-interactions");
 const { DiscordRequest } = require("../utils");
-const { piggie_stats, piggie_server_stats } = require("./serverController");
+const {
+  piggie_stats,
+  piggie_server_stats,
+  piggie_user_stats,
+} = require("./serverController");
 require("express-async-errors");
 
 async function interactionController(req, res) {
@@ -141,6 +145,71 @@ async function interactionController(req, res) {
       res.replySent = true;
       const options = req.body.data.options;
       console.log(options);
+      return;
+    } else if (name === "piggi_user_stats") {
+      await res.send({
+        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+      });
+      res.replySent = true;
+      const options = req.body.data.options;
+      const userId = options[0].value;
+      const guildId = req.body.guild_id;
+
+      const newData = await piggie_user_stats(guildId, userId);
+      const neededFields = {};
+      neededFields.userId = newData.userId;
+      neededFields.username = newData.username;
+      neededFields.joined_at = newData.joined_at;
+      neededFields.averageMessagePerDay = newData.averageMessagePerDay;
+
+      const activeChannels = [];
+      for (
+        let i = newData.activeChannels.length - 1;
+        i >= 0 && i > newData.activeChannels.length - 11;
+        i--
+      ) {
+        activeChannels.push(newData.activeChannels[i]);
+      }
+
+      neededFields.activeChannels = activeChannels.join("\n");
+
+      //latest messages always return only 5
+      const latestMessages = [];
+      for (let i = newData.latestMessages.length - 1; i >= 0; i--) {
+        const currMessage = newData.latestMessages[i];
+        const msgContent =
+          currMessage.content.length < 20
+            ? currMessage.content
+            : currMessage.slice(0, 20);
+        const wantedString = `Channel : ${currMessage.channel}\nMessage : "${msgContent}"\nMessage Time : ${currMessage.timestamp}`;
+        latestMessages.push(wantedString);
+      }
+
+      neededFields.latestMessages = latestMessages.join("\n\n");
+
+      Object.keys(neededFields).forEach((field) => {
+        embedFields.push({ name: field, value: neededFields[field] });
+      });
+
+      const messageObject = {};
+      messageObject.embeds = [
+        {
+          type: "rich",
+          title: "",
+          description: "",
+          color: 0x00ffff,
+          fields: embedFields,
+        },
+      ];
+
+      const interactionToken = req.body.token;
+      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+
+      await DiscordRequest(replyEndpoint, {
+        method: "PATCH",
+        body: messageObject,
+      });
+
       return;
     }
   }
