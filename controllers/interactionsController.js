@@ -3,6 +3,7 @@ const {
   InteractionResponseType,
 } = require("discord-interactions");
 const { DiscordRequest } = require("../utils");
+const { piggie_stats } = require("./serverController");
 
 async function interactionController(req, res) {
   // Interaction type and data
@@ -22,11 +23,21 @@ async function interactionController(req, res) {
     if (name === "piggi_stats") {
       //acknoledge the interaction first itself since the webhook will only wait for 3secs to get the first reply
       await res.send({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          content: "Command is working",
-        },
+        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
+
+      const guildId = req.body.guild_id;
+      const data = await piggie_stats(guildId);
+      const replyData = JSON.stringify(data, null, 4);
+      const interactionToken = req.body.token;
+      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+      const messageObject = {};
+      messageObject.content = replyData;
+      await DiscordRequest(replyEndpoint, {
+        method: "PATCH",
+        body: messageObject,
+      });
+      return;
     }
   }
 }

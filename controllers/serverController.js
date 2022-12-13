@@ -18,8 +18,14 @@ async function getServerDetails(req, res) {
   res.status(200).json({ id, name });
 }
 
-async function piggie_stats(req, res) {
+async function piggie_stats_controller(req, res) {
   const guildId = req.params.id;
+  const data = await piggie_stats(guildId);
+  res.status(200).json(data);
+}
+
+async function piggie_stats(guildId) {
+  //const guildId = req.params.id;
 
   //guild members
   const guildMembers = await getGuildMembers(guildId);
@@ -98,7 +104,8 @@ async function piggie_stats(req, res) {
   newData.activeMemberCount = activeUserCount;
   newData.activeMembers = activeUsers;
   newData.averageMessagePerDay = avgMessagePerDay;
-  res.status(200).json(newData);
+  //res.status(200).json(newData);
+  return newData;
 }
 //piggie_stats("1044887003868713010");
 
@@ -277,6 +284,7 @@ async function piggie_channel_stats(req, res) {
 
 module.exports = {
   piggie_stats,
+  piggie_stats_controller,
   getServerDetails,
   piggie_user_stats,
   piggie_server_stats,
