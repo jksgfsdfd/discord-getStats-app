@@ -4,6 +4,7 @@ const {
 } = require("discord-interactions");
 const { DiscordRequest } = require("../utils");
 const { piggie_stats } = require("./serverController");
+require("express-async-errors");
 
 async function interactionController(req, res) {
   // Interaction type and data
@@ -26,9 +27,10 @@ async function interactionController(req, res) {
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
 
+      res.replySent = true;
       const guildId = req.body.guild_id;
-      const data = await piggie_stats(guildId);
-      const replyData = JSON.stringify(data, null, 4);
+      const newData = await piggie_stats(guildId);
+      const replyData = JSON.stringify(newData, null, 4);
       const interactionToken = req.body.token;
       const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
       const messageObject = {};
