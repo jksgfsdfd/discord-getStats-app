@@ -55,7 +55,7 @@ async function interactionController(req, res) {
       });
 
       const messageObject = {};
-      messageObject.data.embeds = [
+      messageObject.embeds = [
         {
           type: "rich",
           title: "",
