@@ -10,7 +10,6 @@ const {
 } = require("../functionalities");
 
 const moment = require("moment");
-const { query } = require("express");
 require("express-async-errors");
 
 async function getServerDetails(req, res) {
@@ -81,7 +80,7 @@ async function piggie_stats(req, res) {
     const messagesOfChannel = await viewMessagesInAChannel(channel.id);
     const thisMonthMessages = messagesOfChannel.filter((message) => {
       if (compareTime.isBefore(message.timestamp)) {
-        console.log(message);
+        //console.log(message);
         return true;
       } else {
         return false;
@@ -109,13 +108,13 @@ async function piggie_user_stats(req, res) {
   const memberData = await searchGuildMember(guildId, username);
   if (memberData.length === 0) {
     res.status(404);
-    throw new Error("Now such user found");
+    throw new Error("No such user found");
   }
   const member = memberData[0];
   const userId = member.user.id;
   const userName = member.user.username;
   const joined_at = moment(member["joined_at"]).format("D MMM YYYY");
-  console.log(joined_at);
+  //console.log(joined_at);
 
   //last 5 messages,active in channels , average msg/day
   const compareTimeActive = moment().subtract(7, "d");

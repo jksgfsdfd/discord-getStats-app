@@ -10,6 +10,7 @@
 
 /piggi-user-stats :- will take input of username, then show stats of particular user. Joining date, last 5 messages, active in channels, avg message/day.
 
+    sometimes not showing gets ECONNRESET error
     to view message content require Privilage of message_intent
 
 /piggi-server-stats :- sorted list of channels with avg message sent per day and users in each channel.

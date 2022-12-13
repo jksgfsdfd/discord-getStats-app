@@ -1,6 +1,5 @@
 const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
-const channelRouter = require("./routes/channelRouter");
 const serverRouter = require("./routes/serverRouter");
 
 require("express-async-errors");

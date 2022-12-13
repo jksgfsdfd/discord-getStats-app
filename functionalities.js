@@ -53,11 +53,11 @@ async function getGuildMembers(serverId) {
   //     console.log(`File is written successfully!`);
   //   }
   // });
-  console.log(data);
+  //console.log(data);
   return data;
 }
 
-getGuildMembers("1044887003868713010");
+//getGuildMembers("1044887003868713010");
 
 async function searchGuildMember(serverId, username) {
   let endpoint = `/guilds/${serverId}/members/search?query=${username}`;
@@ -71,7 +71,6 @@ async function searchGuildMember(serverId, username) {
   //     console.log(`File is written successfully!`);
   //   }
   // });
-  console.log(data);
   return data;
 }
 
@@ -699,7 +698,7 @@ async function getUsersJoinedWithin(guildId, timeframe) {
   data.joinedUserCount = userDetails.length;
   data.joinedUsers = userDetails;
 
-  console.log(data);
+  //console.log(data);
   return data;
 }
 
