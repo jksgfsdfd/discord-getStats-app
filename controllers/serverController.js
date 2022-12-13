@@ -185,9 +185,19 @@ async function piggie_user_stats(req, res) {
 
 //piggie_user_stats("1044887003868713010", "ronmaa");
 
-async function piggie_server_stats(req, res) {
+async function piggie_server_stats_controller(req, res) {
   const guildId = req.params.id;
-  const reqTimeFrame = req.query.timeframe;
+  const inpTimeframe = req.query.timeframe;
+
+  const newData = await piggie_server_stats(guildId, inpTimeframe);
+
+  res.status(200).json(newData);
+}
+
+async function piggie_server_stats(guildId, inpTimeframe) {
+  //const guildId = req.params.id;
+  //const reqTimeFrame = req.query.timeframe;
+  const reqTimeFrame = inpTimeframe;
   if (reqTimeFrame) {
     if (!Number.isInteger(+reqTimeFrame) || reqTimeFrame[0] == "-") {
       res.status(400);
@@ -206,9 +216,7 @@ async function piggie_server_stats(req, res) {
   //console.log(data);
   const usersJoinData = await getUsersJoinedWithin(guildId, timeframe);
 
-  res
-    .status(200)
-    .json({ channelsData: channelsData, userJoinData: usersJoinData });
+  return { channelsData: channelsData, userJoinData: usersJoinData };
 }
 
 async function piggie_channel_stats(req, res) {
@@ -288,5 +296,6 @@ module.exports = {
   getServerDetails,
   piggie_user_stats,
   piggie_server_stats,
+  piggie_server_stats_controller,
   piggie_channel_stats,
 };

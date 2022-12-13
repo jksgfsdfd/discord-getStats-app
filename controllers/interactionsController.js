@@ -71,6 +71,15 @@ async function interactionController(req, res) {
         body: messageObject,
       });
       return;
+    } else if (name === "piggi_server_stats") {
+      const options = req.body.data.options;
+      console.log(options);
+      await res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "ok",
+        },
+      });
     }
   }
 }
