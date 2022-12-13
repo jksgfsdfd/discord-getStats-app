@@ -31,13 +31,41 @@ async function interactionController(req, res) {
       res.replySent = true;
       const guildId = req.body.guild_id;
       const newData = await piggie_stats(guildId);
-      console.log(newData);
-      const replyData = JSON.stringify(newData, null, 4);
-      console.log(replyData);
+
       const interactionToken = req.body.token;
       const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+
+      const neededFields = {};
+      neededFields.totalMemberCount = newData.totalMemberCount;
+      neededFields.onlineMemberCount = newData.onlineMemberCount;
+      neededFields.activeMemberCount = newData.activeMemberCount;
+      const activeMembers = [];
+      for (
+        let i = newData.activeMembers.length - 1;
+        i >= 0 && i > newData.activeMembers.length - 6;
+        i--
+      ) {
+        activeMembers.push(newData.activeMembers[i].username);
+      }
+      neededFields.activeMembers = activeMembers.join(",");
+      neededFields.averageMessagePerDay = newData.averageMessagePerDay;
+      const embedFields = [];
+      Object.keys(neededFields).forEach((field) => {
+        embedFields.push({ name: field, value: neededFields[field] });
+      });
+
       const messageObject = {};
-      messageObject.embeds = newData;
+      messageObject.embeds = [
+        {
+          type: "rich",
+          title: "",
+          description: "",
+          color: 0x00ffff,
+          fields: neededFields,
+        },
+      ];
+
+      console.log(messageObject);
       await DiscordRequest(replyEndpoint, {
         method: "PATCH",
         body: messageObject,

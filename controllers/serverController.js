@@ -20,8 +20,8 @@ async function getServerDetails(req, res) {
 
 async function piggie_stats_controller(req, res) {
   const guildId = req.params.id;
-  const data = await piggie_stats(guildId);
-  res.status(200).json(data);
+  const newData = await piggie_stats(guildId);
+  res.status(200).json(newData);
 }
 
 async function piggie_stats(guildId) {
