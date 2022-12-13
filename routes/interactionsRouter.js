@@ -1,4 +1,5 @@
 const express = require("express");
+const interactionController = require("../controllers/interactionsController");
 const { VerifyDiscordRequest } = require("../utils");
 require("express-async-errors");
 const interactionsRouter = express.Router();
@@ -9,6 +10,6 @@ interactionsRouter.use(
   })
 );
 
-//interactionsRouter.route("/").post(interactionsController);
+interactionsRouter.route("/").post(interactionController);
 
 module.exports = interactionsRouter;
