@@ -37,7 +37,7 @@ async function interactionController(req, res) {
       const interactionToken = req.body.token;
       const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
       const messageObject = {};
-      messageObject.content = replyData;
+      messageObject.embeds = newData;
       await DiscordRequest(replyEndpoint, {
         method: "PATCH",
         body: messageObject,
