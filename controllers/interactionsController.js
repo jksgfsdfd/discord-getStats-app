@@ -61,7 +61,7 @@ async function interactionController(req, res) {
           title: "",
           description: "",
           color: 0x00ffff,
-          fields: neededFields,
+          fields: embedFields,
         },
       ];
 
