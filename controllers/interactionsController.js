@@ -7,6 +7,7 @@ const {
   piggie_stats,
   piggie_server_stats,
   piggie_user_stats,
+  piggie_channel_stats,
 } = require("./serverController");
 require("express-async-errors");
 
@@ -186,6 +187,58 @@ async function interactionController(req, res) {
       }
 
       neededFields.latestMessages = latestMessages.join("\n\n");
+
+      const embedFields = [];
+      Object.keys(neededFields).forEach((field) => {
+        embedFields.push({ name: field, value: neededFields[field] });
+      });
+
+      const messageObject = {};
+      messageObject.embeds = [
+        {
+          type: "rich",
+          title: "",
+          description: "",
+          color: 0x00ffff,
+          fields: embedFields,
+        },
+      ];
+
+      const interactionToken = req.body.token;
+      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+
+      await DiscordRequest(replyEndpoint, {
+        method: "PATCH",
+        body: messageObject,
+      });
+
+      return;
+    } else if (name === "piggi_channel_stats") {
+      await res.send({
+        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+      });
+      res.replySent = true;
+      const options = req.body.data.options;
+      const channelId = options[0].value;
+      const guildId = req.body.guild_id;
+
+      const newData = await piggie_channel_stats(guildId, channelId, null);
+
+      const neededFields = {};
+      neededFields.channelId = newData.id;
+      neededFields.channelName = newData.name;
+      neededFields.averageMessagePerDay = newData.averageMessagePerDay;
+
+      //piggie_channel_stats always returns only 5 active users hence there is no need to check length again
+      const activeUsers = [];
+
+      for (let i = newData.activeUsers.length - 1; i >= 0; i--) {
+        const currUser = newData.activeUsers[i];
+        const wantedString = `${currUser.username} : ${currUser.activeMessageCount} messages/day`;
+        latestMessages.push(wantedString);
+      }
+
+      neededFields.activeUsers = activeUsers.join("\n");
 
       const embedFields = [];
       Object.keys(neededFields).forEach((field) => {
