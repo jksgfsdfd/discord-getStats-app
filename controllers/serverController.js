@@ -225,13 +225,14 @@ async function piggie_server_stats(guildId, inpTimeframe) {
   return { channelsData: channelsData, userJoinData: usersJoinData };
 }
 
-async function piggie_channel_stats(req, res) {
+async function piggie_channel_stats_controller(req, res) {
   const guildId = req.params.id;
   const channelName = req.query.channel;
   if (!channelName) {
     res.status(400);
     throw new Error("Provide a channel name");
   }
+
   const channels = await getTextandVoiceChannels(guildId);
   let neededChannel;
   for (let channel of channels) {
@@ -246,6 +247,31 @@ async function piggie_channel_stats(req, res) {
   }
 
   const reqTimeFrame = req.query.timeframe;
+
+  const newData = await piggie_channel_stats(
+    guildId,
+    neededChannel.id,
+    reqTimeFrame
+  );
+
+  res.status(200).json(newData);
+}
+
+async function piggie_channel_stats(guildId, channelId, inpTimeframe) {
+  const channels = await getTextandVoiceChannels(guildId);
+  let neededChannel;
+  for (let channel of channels) {
+    if (channel.id === channelId) {
+      neededChannel = channel;
+      break;
+    }
+  }
+  if (!neededChannel) {
+    res.status(404);
+    throw new Error("No such channel found");
+  }
+
+  const reqTimeFrame = inpTimeframe;
   if (reqTimeFrame) {
     if (!Number.isInteger(+reqTimeFrame) || reqTimeFrame[0] == "-") {
       res.status(400);
@@ -286,12 +312,12 @@ async function piggie_channel_stats(req, res) {
 
   const averageMessagePerDay = (channelMessageCount / timeInDays).toFixed(2);
 
-  res.status(200).json({
+  return {
     id: neededChannel.id,
     name: neededChannel.name,
     averageMessagePerDay: averageMessagePerDay,
     activeUsers: neededActiveUsers,
-  });
+  };
 }
 
 //piggie_server_stats("1044887003868713010");
@@ -305,4 +331,5 @@ module.exports = {
   piggie_server_stats,
   piggie_server_stats_controller,
   piggie_channel_stats,
+  piggie_channel_stats_controller,
 };
