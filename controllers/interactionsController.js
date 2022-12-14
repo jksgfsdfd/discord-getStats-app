@@ -320,6 +320,16 @@ async function interactionController(req, res) {
 
         endpoint = `/channels/${DMChannelId}/messages`;
 
+        if (!recentAds) {
+          await DiscordRequest(endpoint, {
+            method: "POST",
+            body: {
+              content: "No newer ads",
+            },
+          });
+          return;
+        }
+
         messageObject = {};
         for (let ad of recentAds) {
           messageObject.content = ad.title;

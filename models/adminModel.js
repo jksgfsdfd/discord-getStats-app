@@ -12,6 +12,6 @@ const adminSchema = new mongoose.Schema({
   latestSeenAdTime: { type: Date, default: Date("2000") },
 });
 
-const adminModel = mongoose.model("Admins", adSchema);
+const adminModel = mongoose.model("Admins", adminSchema);
 
 module.exports = adminModel;
