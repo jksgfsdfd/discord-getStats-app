@@ -319,7 +319,7 @@ async function interactionController(req, res) {
       const recentAds = await Ad.find({
         createdAt: { $gt: userDetail.latestSeenAdTime },
       })
-        .sort("createdAt")
+        .sort("-createdAt")
         .limit(5);
 
       const DMChannelId = userDetail.DMChannelId;
