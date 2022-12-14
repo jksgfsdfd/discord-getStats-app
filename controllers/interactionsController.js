@@ -32,7 +32,6 @@ async function interactionController(req, res) {
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
 
-      console.log("Entered piggi stats");
       res.replySent = true;
       const guildId = req.body.guild_id;
       const newData = await piggie_stats(guildId);
@@ -52,7 +51,7 @@ async function interactionController(req, res) {
       ) {
         activeMembers.push(newData.activeMembers[i].username);
       }
-      neededFields.activeMembers = activeMembers.join(" ");
+      neededFields.activeMembers = activeMembers.join("\n");
       neededFields.averageMessagePerDay = newData.averageMessagePerDay;
       const embedFields = [];
       Object.keys(neededFields).forEach((field) => {
@@ -100,7 +99,7 @@ async function interactionController(req, res) {
         newlyJoinedUsers.push(newData.userJoinData.joinedUsers[i].username);
       }
 
-      neededFields1.newlyJoinedUsers = newlyJoinedUsers.join(" ");
+      neededFields1.newlyJoinedUsers = newlyJoinedUsers.join("\n");
 
       const channelWithAvg = [];
       for (
