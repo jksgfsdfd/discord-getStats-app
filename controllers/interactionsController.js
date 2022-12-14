@@ -295,10 +295,11 @@ async function interactionController(req, res) {
       }
 
       let userDetail = await Admin.findOne({ userId: userId });
+      let endpoint = `/users/@me/channels`;
+      let messageObject = {};
       if (!userDetail) {
         //create dm channel
-        let endpoint = `/users/@me/channels`;
-        let messageObject = {};
+
         messageObject.recipient_id = userId;
 
         const result = await DiscordRequest(endpoint, {
@@ -308,72 +309,68 @@ async function interactionController(req, res) {
         const createdChannel = await result.json();
         await Admin.create({ userId: userId, DMChannelId: createdChannel.id });
         userDetail = await Admin.findOne({ userId: userId });
+      }
+      console.log(
+        "###################### userDetails #############################"
+      );
+      console.log(userDetail);
+      console.log("################################################");
 
-        console.log(
-          "###################### userDetails #############################"
-        );
-        console.log(userDetail);
-        console.log("################################################");
+      const recentAds = await Ad.find({
+        createdAt: { $gte: userDetail.latestSeenAdTime },
+      })
+        .sort("createdAt")
+        .limit(5);
 
-        const recentAds = await Ad.find({
-          createdAt: { $gte: userDetail.latestSeenAdTime },
-        })
-          .sort("createdAt")
-          .limit(5);
+      const DMChannelId = userDetail.DMChannelId;
 
-        const DMChannelId = userDetail.DMChannelId;
+      endpoint = `/channels/${DMChannelId}/messages`;
 
-        endpoint = `/channels/${DMChannelId}/messages`;
+      console.log("################  DM CHAnnel Id  #######################");
+      console.log(DMChannelId);
+      console.log("#################  Recent Ads    ########################");
+      console.log(recentAds);
+      console.log("#########################################");
 
-        console.log("################  DM CHAnnel Id  #######################");
-        console.log(DMChannelId);
-        console.log(
-          "#################  Recent Ads    ########################"
-        );
-        console.log(recentAds);
-        console.log("#########################################");
-
-        if (recentAds.length === 0) {
-          console.log("No newer ads");
-          await DiscordRequest(endpoint, {
-            method: "POST",
-            body: {
-              content: "No newer ads",
-            },
-          });
-          return;
-        }
-
-        messageObject = {};
-        for (let ad of recentAds) {
-          messageObject.content = ad.title;
-          messageObject.embeds = [
-            {
-              image: {
-                url: ad.imageUrl,
-              },
-            },
-          ];
-          messageObject.components = [
-            {
-              type: MessageComponentTypes.ACTION_ROW,
-              components: [
-                {
-                  type: MessageComponentTypes.BUTTON,
-                  label: ad.CTAText,
-                  style: ButtonStyleTypes.PRIMARY,
-                  custom_id: "msgButton",
-                },
-              ],
-            },
-          ];
-          await DiscordRequest(endpoint, {
-            method: "POST",
-            body: messageObject,
-          });
-        }
+      if (recentAds.length === 0) {
+        console.log("No newer ads");
+        await DiscordRequest(endpoint, {
+          method: "POST",
+          body: {
+            content: "No newer ads",
+          },
+        });
+        return;
       }
 
+      messageObject = {};
+      for (let ad of recentAds) {
+        messageObject.content = ad.title;
+        messageObject.embeds = [
+          {
+            image: {
+              url: ad.imageUrl,
+            },
+          },
+        ];
+        messageObject.components = [
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              {
+                type: MessageComponentTypes.BUTTON,
+                label: ad.CTAText,
+                style: ButtonStyleTypes.PRIMARY,
+                custom_id: "msgButton",
+              },
+            ],
+          },
+        ];
+        await DiscordRequest(endpoint, {
+          method: "POST",
+          body: messageObject,
+        });
+      }
       mongoose.disconnect();
       return;
     }
