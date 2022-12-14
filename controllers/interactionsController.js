@@ -1,7 +1,14 @@
+const mongoose = require("mongoose");
 const {
   InteractionType,
   InteractionResponseType,
+  MessageComponentTypes,
+  ButtonStyleTypes,
 } = require("discord-interactions");
+const connectDB = require("../db/connectDB");
+const { addListener } = require("../models/adminModel");
+const Admin = require("../models/adminModel");
+const Ad = require("../models/adModel");
 const { DiscordRequest } = require("../utils");
 const {
   piggie_stats,
@@ -9,6 +16,7 @@ const {
   piggie_user_stats,
   piggie_channel_stats,
 } = require("./serverController");
+
 require("express-async-errors");
 
 async function interactionController(req, res) {
@@ -263,6 +271,86 @@ async function interactionController(req, res) {
         body: messageObject,
       });
 
+      return;
+    } else if (name === "piggi_new_ads") {
+      //find the userId of the called user
+      //check if he is the admin of the server -- no need we can implement this by setting the slash command with permisions
+      //check the database for the latest ad he have seen
+      //check the database whether already a DM channel have been created for this admin
+      //  if already created , send 5 newer ads to the dm channel else create and send
+      await res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "Check DM's",
+        },
+      });
+      res.replySent = true;
+
+      const guildId = req.body.guild_id;
+      const userId = req.body.member.user.id;
+
+      try {
+        await connectDB(process.env.MONGO_URI);
+      } catch (err) {
+        throw new Error("Could not connect to database");
+      }
+
+      let userDetail = await Admin.findOne({ userId: userId });
+      if (!userDetail) {
+        //create dm channel
+        let endpoint = `/users/@me/channels`;
+        let messageObject = {};
+        messageObject.recipient_id = userId;
+        const result = await DiscordRequest(endpoint, {
+          method: "POST",
+          body: messageObject,
+        });
+        const createdChannel = await result.json();
+        await Admin.create({ userId: userId, DMChannelId: createdChannel.id });
+        userDetail = await Admin.findOne({ userId: userId });
+
+        const recentAds = await Ad.find({
+          createdAt: { $gte: userDetail.latestSeenAdTime },
+        })
+          .sort("createdAt")
+          .limit(5);
+
+        console.log(recentAds);
+        const DMChannelId = userDetail.DMChannelId;
+
+        endpoint = `/channels/${DMChannelId}/messages`;
+
+        messageObject = {};
+        for (let ad of recentAds) {
+          messageObject.content = ad.title;
+          messageObject.embeds = [
+            {
+              image: {
+                url: ad.imageUrl,
+              },
+            },
+          ];
+          messageObject.components = [
+            {
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
+                {
+                  type: MessageComponentTypes.BUTTON,
+                  label: ad.CTAText,
+                  style: ButtonStyleTypes.PRIMARY,
+                  custom_id: "msgButton",
+                },
+              ],
+            },
+          ];
+          await DiscordRequest(endpoint, {
+            method: "POST",
+            body: messageObject,
+          });
+        }
+      }
+
+      mongoose.disconnect();
       return;
     }
   }
