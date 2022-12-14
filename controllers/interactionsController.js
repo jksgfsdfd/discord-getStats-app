@@ -235,7 +235,7 @@ async function interactionController(req, res) {
       for (let i = newData.activeUsers.length - 1; i >= 0; i--) {
         const currUser = newData.activeUsers[i];
         const wantedString = `${currUser.username} : ${currUser.activeMessageCount} messages/day`;
-        latestMessages.push(wantedString);
+        activeUsers.push(wantedString);
       }
 
       neededFields.activeUsers = activeUsers.join("\n");
