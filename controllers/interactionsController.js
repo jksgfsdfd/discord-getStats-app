@@ -317,7 +317,7 @@ async function interactionController(req, res) {
       console.log("################################################");
 
       const recentAds = await Ad.find({
-        createdAt: { $gte: userDetail.latestSeenAdTime },
+        createdAt: { $gt: userDetail.latestSeenAdTime },
       })
         .sort("createdAt")
         .limit(5);

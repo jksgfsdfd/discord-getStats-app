@@ -9,7 +9,7 @@ const adminSchema = new mongoose.Schema({
   DMChannelId: {
     type: String,
   },
-  latestSeenAdTime: { type: Date, default: Date("2000") },
+  latestSeenAdTime: { type: Date, default: "2000" },
 });
 
 const adminModel = mongoose.model("Admins", adminSchema);
