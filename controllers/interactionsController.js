@@ -178,9 +178,9 @@ async function interactionController(req, res) {
       for (let i = newData.latestMessages.length - 1; i >= 0; i--) {
         const currMessage = newData.latestMessages[i];
         const msgContent =
-          currMessage.content.length < 20
+          currMessage.content.length < 30
             ? currMessage.content
-            : currMessage.content.slice(0, 20) + "...";
+            : currMessage.content.slice(0, 30) + "...";
         const wantedString = `Channel : ${currMessage.channel}\nMessage : "${msgContent}"\nMessage Time : ${currMessage.timestamp}`;
         latestMessages.push(wantedString);
       }
