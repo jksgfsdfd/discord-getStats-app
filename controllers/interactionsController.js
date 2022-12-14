@@ -286,7 +286,6 @@ async function interactionController(req, res) {
       });
       res.replySent = true;
 
-      const guildId = req.body.guild_id;
       const userId = req.body.member.user.id;
 
       try {
@@ -301,6 +300,7 @@ async function interactionController(req, res) {
         let endpoint = `/users/@me/channels`;
         let messageObject = {};
         messageObject.recipient_id = userId;
+
         const result = await DiscordRequest(endpoint, {
           method: "POST",
           body: messageObject,
@@ -309,18 +309,32 @@ async function interactionController(req, res) {
         await Admin.create({ userId: userId, DMChannelId: createdChannel.id });
         userDetail = await Admin.findOne({ userId: userId });
 
+        console.log(
+          "###################### userDetails #############################"
+        );
+        console.log(userDetail);
+        console.log("################################################");
+
         const recentAds = await Ad.find({
           createdAt: { $gte: userDetail.latestSeenAdTime },
         })
           .sort("createdAt")
           .limit(5);
 
-        console.log(recentAds);
         const DMChannelId = userDetail.DMChannelId;
 
         endpoint = `/channels/${DMChannelId}/messages`;
 
-        if (!recentAds) {
+        console.log("################  DM CHAnnel Id  #######################");
+        console.log(DMChannelId);
+        console.log(
+          "#################  Recent Ads    ########################"
+        );
+        console.log(recentAds);
+        console.log("#########################################");
+
+        if (recentAds.length === 0) {
+          console.log("No newer ads");
           await DiscordRequest(endpoint, {
             method: "POST",
             body: {
