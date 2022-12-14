@@ -319,7 +319,7 @@ async function interactionController(req, res) {
       const recentAds = await Ad.find({
         createdAt: { $gt: userDetail.latestSeenAdTime },
       })
-        .sort("-createdAt")
+        .sort("createdAt")
         .limit(5);
 
       const DMChannelId = userDetail.DMChannelId;
@@ -383,7 +383,9 @@ async function interactionController(req, res) {
           body: messageObject,
         });
       }
-      await userDetail.update({ latestSeenAdTime: recentAds[0].createdAt });
+      await userDetail.update({
+        latestSeenAdTime: recentAds[recentAds.length - 1].createdAt,
+      });
       mongoose.disconnect();
       return;
     }
