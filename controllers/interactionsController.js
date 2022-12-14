@@ -180,7 +180,7 @@ async function interactionController(req, res) {
         const msgContent =
           currMessage.content.length < 20
             ? currMessage.content
-            : currMessage.slice(0, 20);
+            : currMessage.content.slice(0, 20);
         const wantedString = `Channel : ${currMessage.channel}\nMessage : "${msgContent}"\nMessage Time : ${currMessage.timestamp}`;
         latestMessages.push(wantedString);
       }
