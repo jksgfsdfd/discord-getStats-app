@@ -345,6 +345,11 @@ async function interactionController(req, res) {
 
       messageObject = {};
       for (let ad of recentAds) {
+        console.log(
+          "########################### ad timestamp ############################"
+        );
+        console.log(ad.createdAt);
+        console.log("#####################################################");
         messageObject.content = ad.title;
         messageObject.embeds = [
           {
@@ -366,11 +371,19 @@ async function interactionController(req, res) {
             ],
           },
         ];
+        console.log(
+          "################################### message object ###########################################"
+        );
+        console.log(messageObject);
+        console.log(
+          "############################################################################"
+        );
         await DiscordRequest(endpoint, {
           method: "POST",
           body: messageObject,
         });
       }
+      await userDetail.update({ latestSeenAdTime: recentAds[0].createdAt });
       mongoose.disconnect();
       return;
     }
