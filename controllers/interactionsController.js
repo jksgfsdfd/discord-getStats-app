@@ -31,6 +31,41 @@ async function interactionController(req, res) {
     return res.send({ type: InteractionResponseType.PONG });
   }
 
+  if (type === InteractionType.MESSAGE_COMPONENT) {
+    // delete action to be performed if clicked on the button
+    const componentId = data.custom_id;
+
+    if (componentId == "msgButton") {
+      let userId; //in case of DM user key exist,in case of guild use member.user.id
+      if (req.body.user) {
+        userId = req.body.user.id;
+      } else {
+        userId = req.body.member.user.id;
+      }
+
+      console.log(userId);
+      await res.send({
+        type: InteractionResponseType.UPDATE_MESSAGE,
+        data: {
+          components: [
+            {
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
+                {
+                  type: MessageComponentTypes.BUTTON,
+                  label: "Visit Website",
+                  style: ButtonStyleTypes.PRIMARY,
+                  url: "https://discord.com/developers/docs/getting-started",
+                },
+              ],
+            },
+          ],
+        },
+      });
+      return;
+    }
+  }
+
   if (type === InteractionType.APPLICATION_COMMAND) {
     const { name } = data;
 
