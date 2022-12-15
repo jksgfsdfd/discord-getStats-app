@@ -7,9 +7,9 @@ const {
   InteractionResponseFlags,
 } = require("discord-interactions");
 const connectDB = require("../db/connectDB");
-const { addListener } = require("../models/adminModel");
 const Admin = require("../models/adminModel");
 const Ad = require("../models/adModel");
+const MsgAdMap = require("./models/msgAdMapModel");
 const { DiscordRequest } = require("../utils");
 const {
   piggie_stats,
@@ -81,13 +81,16 @@ async function interactionController(req, res) {
 
       //we will create a new message
       //to create a deffered interaction response and include message component it Requires an application-owned webhook.
+      const adMap = await MsgAdMap.findOne({ msgId: req.body.message.id });
+      const ad = await Ad.findById(adMap.adId);
+
       messageObject.embeds = [
         {
           type: "rich",
-          title: "Go to dev.com",
+          title: ad.CTAText,
           description: "",
           color: 0x00ffff,
-          url: "https://discord.com/developers/docs/resources/channel#get-channel-message",
+          url: ad.CTAUrl,
         },
       ];
 
