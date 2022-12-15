@@ -69,7 +69,8 @@ async function interactionController(req, res) {
       //wouldn't work since we are editing an ad that is open to everyone...hence setting this flag is of no use
       //messageObject.flags = InteractionResponseFlags.EPHEMERAL;
 
-      messageObject.components = [
+      messageObject.content = "Edited";
+      /*messageObject.components = [
         {
           type: MessageComponentTypes.ACTION_ROW,
           components: [
@@ -81,7 +82,7 @@ async function interactionController(req, res) {
             },
           ],
         },
-      ];
+      ];*/
       await DiscordRequest(endpoint, {
         method: "PATCH",
         body: messageObject,
