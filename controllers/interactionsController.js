@@ -9,7 +9,7 @@ const {
 const connectDB = require("../db/connectDB");
 const Admin = require("../models/adminModel");
 const Ad = require("../models/adModel");
-const MsgAdMap = require("./models/msgAdMapModel");
+const MsgAdMap = require("../models/msgAdMapModel");
 const { DiscordRequest } = require("../utils");
 const {
   piggie_stats,
