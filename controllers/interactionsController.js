@@ -67,7 +67,7 @@ async function interactionController(req, res) {
       const messageObject = {};
 
       //wouldn't work since we are editing an ad that is open to everyone...hence setting this flag is of no use
-      messageObject.flags = InteractionResponseFlags.EPHEMERAL;
+      //messageObject.flags = InteractionResponseFlags.EPHEMERAL;
 
       messageObject.components = [
         {
