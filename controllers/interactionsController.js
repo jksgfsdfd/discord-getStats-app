@@ -81,8 +81,14 @@ async function interactionController(req, res) {
 
       //we will create a new message
       //to create a deffered interaction response and include message component it Requires an application-owned webhook.
+      try {
+        await connectDB(process.env.MONGO_URI);
+      } catch (err) {
+        throw new Error("Could not connect to database");
+      }
       const adMap = await MsgAdMap.findOne({ msgId: req.body.message.id });
       const ad = await Ad.findById(adMap.adId);
+      console.log(ad);
 
       messageObject.embeds = [
         {
@@ -111,6 +117,8 @@ async function interactionController(req, res) {
         method: "PATCH",
         body: messageObject,
       });
+
+      mongoose.disconnect();
       return;
     }
   }
