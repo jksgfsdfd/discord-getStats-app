@@ -83,12 +83,14 @@ async function interactionController(req, res) {
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
 
-      res.replySent = true;
-      const guildId = req.body.guild_id;
-      const newData = await piggie_stats(guildId);
-
       const interactionToken = req.body.token;
       const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+
+      res.replySent = true;
+      res.replyEndpoint = replyEndpoint;
+
+      const guildId = req.body.guild_id;
+      const newData = await piggie_stats(guildId);
 
       const neededFields = {};
       neededFields.totalMemberCount = newData.totalMemberCount;
@@ -130,13 +132,14 @@ async function interactionController(req, res) {
       await res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
+      const interactionToken = req.body.token;
+      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+
       res.replySent = true;
+      res.replyEndpoint = replyEndpoint;
 
       const guildId = req.body.guild_id;
       const newData = await piggie_server_stats(guildId, null);
-
-      const interactionToken = req.body.token;
-      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
 
       const neededFields1 = {};
 
@@ -201,7 +204,12 @@ async function interactionController(req, res) {
       await res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
+      const interactionToken = req.body.token;
+      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+
       res.replySent = true;
+      res.replyEndpoint = replyEndpoint;
+
       const options = req.body.data.options;
       const userId = options[0].value;
       const guildId = req.body.guild_id;
@@ -254,9 +262,6 @@ async function interactionController(req, res) {
         },
       ];
 
-      const interactionToken = req.body.token;
-      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
-
       await DiscordRequest(replyEndpoint, {
         method: "PATCH",
         body: messageObject,
@@ -267,7 +272,12 @@ async function interactionController(req, res) {
       await res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
+      const interactionToken = req.body.token;
+      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
+
       res.replySent = true;
+      res.replyEndpoint = replyEndpoint;
+
       const options = req.body.data.options;
       const channelId = options[0].value;
       const guildId = req.body.guild_id;
@@ -305,9 +315,6 @@ async function interactionController(req, res) {
           fields: embedFields,
         },
       ];
-
-      const interactionToken = req.body.token;
-      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
 
       await DiscordRequest(replyEndpoint, {
         method: "PATCH",
