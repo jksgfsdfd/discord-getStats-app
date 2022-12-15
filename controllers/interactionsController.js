@@ -34,7 +34,7 @@ async function interactionController(req, res) {
   if (type === InteractionType.MESSAGE_COMPONENT) {
     const componentId = data.custom_id;
 
-    if (componentId == "msgButton") {
+    if (componentId == "userClick") {
       let userId; //in case of DM user key exist,in case of guild use member.user.id
       if (req.body.user) {
         userId = req.body.user.id;
@@ -407,8 +407,8 @@ async function interactionController(req, res) {
               {
                 type: MessageComponentTypes.BUTTON,
                 label: ad.CTAText,
-                style: ButtonStyleTypes.PRIMARY,
-                custom_id: "msgButton",
+                style: ButtonStyleTypes.LINK,
+                url: ad.CTAUrl,
               },
             ],
           },
