@@ -53,25 +53,22 @@ async function interactionController(req, res) {
       console.log(
         "###########################################################################"
       );
-      const sentObj = await res.send({
-        type: InteractionResponseType.UPDATE_MESSAGE,
-        data: {
-          content: "Edited message",
-          components: [
-            {
-              type: MessageComponentTypes.ACTION_ROW,
-              components: [
-                {
-                  type: MessageComponentTypes.BUTTON,
-                  style: ButtonStyleTypes.LINK,
-                  url: "https://discord.com/developers/docs/getting-started",
-                },
-              ],
-            },
-          ],
-        },
+      await res.send({
+        type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
       });
-      // console.log(sentObj);
+
+      res.replySent = true;
+      const message = req.body.message;
+      const messageId = message.id;
+      const channelId = message.channel_id;
+
+      const endpoint = `channels/${channelId}/messages/${messageId}`;
+      const messageObject = {};
+      messageObject.content = "Edited";
+      await DiscordRequest(endpoint, {
+        method: "PATCH",
+        body: messageObject,
+      });
       return;
     }
   }
