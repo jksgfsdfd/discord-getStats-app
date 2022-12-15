@@ -32,7 +32,6 @@ async function interactionController(req, res) {
   }
 
   if (type === InteractionType.MESSAGE_COMPONENT) {
-    // delete action to be performed if clicked on the button
     const componentId = data.custom_id;
 
     if (componentId == "msgButton") {
@@ -57,7 +56,7 @@ async function interactionController(req, res) {
       const sentObj = await res.send({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          //content: "Edited message",
+          content: "Edited message",
           components: [
             {
               type: MessageComponentTypes.ACTION_ROW,
