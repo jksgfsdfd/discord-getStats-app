@@ -4,6 +4,7 @@ const {
   InteractionResponseType,
   MessageComponentTypes,
   ButtonStyleTypes,
+  InteractionResponseFlags,
 } = require("discord-interactions");
 const connectDB = require("../db/connectDB");
 const { addListener } = require("../models/adminModel");
@@ -324,6 +325,7 @@ async function interactionController(req, res) {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content: "Check DM's",
+          flags: InteractionResponseFlags.EPHEMERAL,
         },
       });
       res.replySent = true;
