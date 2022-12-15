@@ -10,6 +10,7 @@ const connectDB = require("../db/connectDB");
 const Admin = require("../models/adminModel");
 const Ad = require("../models/adModel");
 const MsgAdMap = require("../models/msgAdMapModel");
+const AdUserClick = require("../models/adUserClickModel");
 const { DiscordRequest } = require("../utils");
 const {
   piggie_stats,
@@ -36,17 +37,17 @@ async function interactionController(req, res) {
     const componentId = data.custom_id;
 
     if (componentId == "userClickButton") {
-      let userId; //in case of DM user key exist,in case of guild use member.user.id
+      let username; //in case of DM user key exist,in case of guild use member.user.id
       if (req.body.user) {
-        userId = req.body.user.id;
+        username = req.body.user.username;
       } else {
-        userId = req.body.member.user.id;
+        username = req.body.member.user.username;
       }
 
       console.log(
         "################################### userID #####################################"
       );
-      console.log(userId);
+      console.log(username);
       console.log(
         "################################### the message details of which this interaction arose from #####################################"
       );
@@ -86,8 +87,18 @@ async function interactionController(req, res) {
       } catch (err) {
         throw new Error("Could not connect to database");
       }
+
       const adMap = await MsgAdMap.findOne({ msgId: req.body.message.id });
       const ad = await Ad.findById(adMap.adId);
+
+      const check = await AdUserClick.findOne({
+        adId: ad._id,
+        username: username,
+      });
+
+      if (!check) {
+        await AdUserClick.create({ adId: ad._id, username: username });
+      }
       console.log(ad);
 
       messageObject.embeds = [
