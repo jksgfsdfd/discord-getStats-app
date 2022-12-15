@@ -77,7 +77,17 @@ async function interactionController(req, res) {
       //this wont work since message components cannot be edited
 
       //we will create a new message
-      messageObject.components = [
+      messageObject.embeds = [
+        {
+          type: "rich",
+          title: "Go to dev.com",
+          description: "",
+          color: 0x00ffff,
+          url: "https://discord.com/developers/docs/resources/channel#get-channel-message",
+        },
+      ];
+
+      /* messageObject.components = [
         {
           type: MessageComponentTypes.ACTION_ROW,
           components: [
@@ -89,7 +99,7 @@ async function interactionController(req, res) {
             },
           ],
         },
-      ];
+      ];*/
       await DiscordRequest(replyEndpoint, {
         method: "PATCH",
         body: messageObject,
