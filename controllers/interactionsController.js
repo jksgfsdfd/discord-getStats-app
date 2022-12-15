@@ -75,7 +75,7 @@ async function interactionController(req, res) {
           components: [
             {
               type: MessageComponentTypes.BUTTON,
-              label: showAd.CTAText,
+              //label: showAd.CTAText,
               style: ButtonStyleTypes.LINK,
               url: "https://discord.com/developers/docs/resources/channel#get-channel-message",
             },
