@@ -35,7 +35,7 @@ async function interactionController(req, res) {
   if (type === InteractionType.MESSAGE_COMPONENT) {
     const componentId = data.custom_id;
 
-    if (componentId == "userClick") {
+    if (componentId == "userClickButton") {
       let userId; //in case of DM user key exist,in case of guild use member.user.id
       if (req.body.user) {
         userId = req.body.user.id;
@@ -65,7 +65,23 @@ async function interactionController(req, res) {
 
       const endpoint = `channels/${channelId}/messages/${messageId}`;
       const messageObject = {};
-      messageObject.content = "Edited";
+
+      //wouldn't work since we are editing an ad that is open to everyone...hence setting this flag is of no use
+      messageObject.flags = InteractionResponseFlags.EPHEMERAL;
+
+      messageObject.components = [
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: [
+            {
+              type: MessageComponentTypes.BUTTON,
+              label: showAd.CTAText,
+              style: ButtonStyleTypes.LINK,
+              url: "https://discord.com/developers/docs/resources/channel#get-channel-message",
+            },
+          ],
+        },
+      ];
       await DiscordRequest(endpoint, {
         method: "PATCH",
         body: messageObject,
