@@ -54,7 +54,7 @@ async function interactionController(req, res) {
       console.log(
         "###########################################################################"
       );
-      await res.send({
+      const sentObj = await res.send({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
           content: "Edited message",
@@ -64,7 +64,6 @@ async function interactionController(req, res) {
               components: [
                 {
                   type: MessageComponentTypes.BUTTON,
-                  label: "Visit Website",
                   style: ButtonStyleTypes.LINK,
                   url: "https://discord.com/developers/docs/getting-started",
                 },
@@ -73,6 +72,7 @@ async function interactionController(req, res) {
           ],
         },
       });
+      console.log(sentObj);
       return;
     }
   }
