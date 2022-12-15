@@ -65,7 +65,7 @@ async function interactionController(req, res) {
                 {
                   type: MessageComponentTypes.BUTTON,
                   label: "Visit Website",
-                  style: ButtonStyleTypes.PRIMARY,
+                  style: ButtonStyleTypes.LINK,
                   url: "https://discord.com/developers/docs/getting-started",
                 },
               ],
