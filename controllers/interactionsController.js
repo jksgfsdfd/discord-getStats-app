@@ -55,22 +55,29 @@ async function interactionController(req, res) {
         "###########################################################################"
       );
       await res.send({
-        type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
+        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
       });
 
-      res.replySent = true;
-      const message = req.body.message;
-      const messageId = message.id;
-      const channelId = message.channel_id;
+      const interactionToken = req.body.token;
+      const replyEndpoint = `/webhooks/${process.env.APP_ID}/${interactionToken}/messages/@original`;
 
-      const endpoint = `channels/${channelId}/messages/${messageId}`;
+      res.replySent = true;
+      res.replyEndpoint = replyEndpoint;
+
+      //const message = req.body.message;
+      //const messageId = message.id;
+      //const channelId = message.channel_id;
+
       const messageObject = {};
 
       //wouldn't work since we are editing an ad that is open to everyone...hence setting this flag is of no use
-      //messageObject.flags = InteractionResponseFlags.EPHEMERAL;
+      messageObject.flags = InteractionResponseFlags.EPHEMERAL;
 
-      messageObject.content = "Edited";
-      /*messageObject.components = [
+      //messageObject.content = "Edited";
+      //this wont work since message components cannot be edited
+
+      //we will create a new message
+      messageObject.components = [
         {
           type: MessageComponentTypes.ACTION_ROW,
           components: [
@@ -82,8 +89,8 @@ async function interactionController(req, res) {
             },
           ],
         },
-      ];*/
-      await DiscordRequest(endpoint, {
+      ];
+      await DiscordRequest(replyEndpoint, {
         method: "PATCH",
         body: messageObject,
       });
