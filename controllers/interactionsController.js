@@ -57,7 +57,7 @@ async function interactionController(req, res) {
       const sentObj = await res.send({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: "Edited message",
+          //content: "Edited message",
           components: [
             {
               type: MessageComponentTypes.ACTION_ROW,
@@ -72,7 +72,7 @@ async function interactionController(req, res) {
           ],
         },
       });
-      console.log(sentObj);
+      // console.log(sentObj);
       return;
     }
   }
