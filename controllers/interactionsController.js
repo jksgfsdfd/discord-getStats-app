@@ -56,6 +56,9 @@ async function interactionController(req, res) {
       );
       await res.send({
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          flags: InteractionResponseFlags.EPHEMERAL,
+        },
       });
 
       const interactionToken = req.body.token;
@@ -71,12 +74,13 @@ async function interactionController(req, res) {
       const messageObject = {};
 
       //wouldn't work since we are editing an ad that is open to everyone...hence setting this flag is of no use
-      messageObject.flags = InteractionResponseFlags.EPHEMERAL;
+      //messageObject.flags = InteractionResponseFlags.EPHEMERAL;
 
       //messageObject.content = "Edited";
       //this wont work since message components cannot be edited
 
       //we will create a new message
+      //to create a deffered interaction response and include message component it Requires an application-owned webhook.
       messageObject.embeds = [
         {
           type: "rich",
