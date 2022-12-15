@@ -43,10 +43,21 @@ async function interactionController(req, res) {
         userId = req.body.member.user.id;
       }
 
+      console.log(
+        "################################### userID #####################################"
+      );
       console.log(userId);
+      console.log(
+        "################################### the message details of which this interaction arose from #####################################"
+      );
+      console.log(req.body.message);
+      console.log(
+        "###########################################################################"
+      );
       await res.send({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
+          content: "Edited message",
           components: [
             {
               type: MessageComponentTypes.ACTION_ROW,

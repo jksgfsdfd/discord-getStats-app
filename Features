@@ -24,3 +24,7 @@
 
     number of users in channel api not found
     could instead implement most active user in the channel --added
+
+/piggi-new-ads :
+
+    displays new ads to admin as dm
