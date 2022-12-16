@@ -9,8 +9,7 @@ const {
 const connectDB = require("../db/connectDB");
 const Admin = require("../models/adminModel");
 const Ad = require("../models/adModel");
-const MsgAdMap = require("../models/msgAdMapModel");
-const AdUserClick = require("../models/adUserClickModel");
+const Advertisment = require("../models/advertismentModel");
 const { DiscordRequest } = require("../utils");
 const {
   piggie_stats,
@@ -88,18 +87,23 @@ async function interactionController(req, res) {
         throw new Error("Could not connect to database");
       }
 
-      const adMap = await MsgAdMap.findOne({ msgId: req.body.message.id });
-      const ad = await Ad.findById(adMap.adId);
-
-      const check = await AdUserClick.findOne({
-        adId: ad._id,
-        username: username,
+      //right now doesn't take care of the advertisment end time
+      const advertisment = await Advertisment.findOne({
+        msgId: req.body.message.id,
       });
+      const ad = await Ad.findById(advertisment.adId);
 
-      if (!check) {
-        await AdUserClick.create({ adId: ad._id, username: username });
+      if (!advertisment.clickedUsers.includes(username)) {
+        advertisment.clickedUsers.push(username);
+        await advertisment.save();
       }
+
+      console.log(
+        "################################# advertisment followed by ad data ######################"
+      );
+      console.log(advertisment);
       console.log(ad);
+      console.log("###########################################");
 
       messageObject.embeds = [
         {
