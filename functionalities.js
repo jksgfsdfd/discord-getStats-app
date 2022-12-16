@@ -53,7 +53,7 @@ async function getGuildMembers(serverId) {
   //     console.log(`File is written successfully!`);
   //   }
   // });
-  //console.log(data);
+  // console.log(data);
   return data;
 }
 
@@ -111,9 +111,16 @@ async function getChannel(channelId) {
 }
 
 async function viewMessagesInAChannel(channelId) {
-  let endpoint = `/channels/${channelId}/messages`;
+  let endpoint = `/channels/${channelId}/messages?limit=100`;
   const result = await DiscordRequest(endpoint, { method: "GET" });
-  const data = await result.json();
+  let thisRoundData = await result.json();
+  const data = [];
+  while (thisRoundData.length > 0) {
+    data.push(...thisRoundData);
+    const lastId = thisRoundData[thisRoundData.length - 1].id;
+    endpoint = `/channels/${channelId}/messages?limit=100&after=${lastId}`;
+    thisRoundData = await DiscordRequest(endpoint, { method: "GET" });
+  }
   // const writeData = JSON.stringify(data, null, 4);
   // fs.writeFile("./channelMessages.json", writeData, "utf8", (err) => {
   //   if (err) {
@@ -124,7 +131,6 @@ async function viewMessagesInAChannel(channelId) {
   // });
   return data;
 }
-
 //no use since no additional information is given
 async function viewMessageInAChannel(channelId, messageId) {
   let endpoint = `/channels/${channelId}/messages/${messageId}`;

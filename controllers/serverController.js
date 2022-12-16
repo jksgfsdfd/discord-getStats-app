@@ -31,6 +31,8 @@ async function piggie_stats(guildId) {
   //guild members
   const guildMembers = await getGuildMembers(guildId);
   // console.log(guildMembers);
+
+  //if only bot functionality is required then can avoid guild members
   const minGuildMembers = guildMembers.map((member) => {
     const joined_at = moment(member["joined_at"]).format("D MMM YYYY");
     const id = member.user.id;
@@ -46,34 +48,27 @@ async function piggie_stats(guildId) {
   //active users
   // timeframe = 1 week
   // find all channels , get all their mesages
-  let compareTime = moment().subtract(7, "d");
+  const compareTimeWeek = moment().subtract(7, "d");
+  const compareTimeMonth = moment().subtract(30, "d");
+
   const channels = await getTextandVoiceChannels(guildId);
-  let activeUserCount = 0;
+  let monthlyMessageCount = 0;
   let activeUsers = [];
-  let checkNextUser = false;
-  for (let user of minGuildMembers) {
-    checkNextUser = false;
-    for (let chan of channels) {
-      const messagesOfChannel = await viewMessagesInAChannel(chan.id);
-      const thisWeekMessages = messagesOfChannel.filter((message) => {
-        if (compareTime.isBefore(message.timestamp)) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-      for (let msg of thisWeekMessages) {
-        if (msg.author.id === user.id) {
-          activeUserCount++;
-          activeUsers.push(user);
-          checkNextUser = true;
-          break;
+
+  for (let chan of channels) {
+    const messagesOfChannel = await viewMessagesInAChannel(chan.id);
+
+    messagesOfChannel.forEach((message) => {
+      if (compareTimeMonth.isBefore(message.timestamp)) {
+        monthlyMessageCount++;
+      }
+
+      if (compareTimeWeek.isBefore(message.timestamp)) {
+        if (!activeUsers.includes(message.author.username)) {
+          activeUsers.push(message.author.username);
         }
       }
-      if (checkNextUser) {
-        break;
-      }
-    }
+    });
   }
 
   // console.log(activeUserCount);
@@ -81,20 +76,9 @@ async function piggie_stats(guildId) {
 
   //find avg message perday
   //timeframe = 1month
-  compareTime = moment().subtract(30, "d");
-  let monthlyMessageCount = 0;
-  for (let channel of channels) {
-    const messagesOfChannel = await viewMessagesInAChannel(channel.id);
-    const thisMonthMessages = messagesOfChannel.filter((message) => {
-      if (compareTime.isBefore(message.timestamp)) {
-        //console.log(message);
-        return true;
-      } else {
-        return false;
-      }
-    });
-    monthlyMessageCount += thisMonthMessages.length;
-  }
+
+  //compareTime = moment().subtract(30, "d");
+  //let monthlyMessageCount = 0;
 
   const avgMessagePerDay = (monthlyMessageCount / 30).toFixed(2);
 
@@ -102,7 +86,7 @@ async function piggie_stats(guildId) {
   newData.serverMembers = minGuildMembers;
   newData.totalMemberCount = userCount.totalUsers;
   newData.onlineMemberCount = userCount.onlineUsers;
-  newData.activeMemberCount = activeUserCount;
+  newData.activeMemberCount = activeUsers.length;
   newData.activeMembers = activeUsers;
   newData.averageMessagePerDay = avgMessagePerDay;
   //res.status(200).json(newData);

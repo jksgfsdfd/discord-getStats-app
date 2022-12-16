@@ -1,0 +1,161 @@
+[
+    {
+        "avatar": null,
+        "communication_disabled_until": null,
+        "flags": 0,
+        "is_pending": false,
+        "joined_at": "2022-12-13T09:57:38.516000+00:00",
+        "nick": null,
+        "pending": false,
+        "premium_since": null,
+        "roles": [
+            "1052162374926348303"
+        ],
+        "user": {
+            "id": "458276816071950337",
+            "username": "ServerStats",
+            "avatar": "c100108f7602bd84ffef257993f77d66",
+            "avatar_decoration": null,
+            "discriminator": "0197",
+            "public_flags": 65536,
+            "bot": true
+        },
+        "mute": false,
+        "deaf": false
+    },
+    {
+        "avatar": null,
+        "communication_disabled_until": null,
+        "flags": 0,
+        "is_pending": false,
+        "joined_at": "2022-12-13T09:54:27.574000+00:00",
+        "nick": null,
+        "pending": false,
+        "premium_since": null,
+        "roles": [
+            "1052161574057562209"
+        ],
+        "user": {
+            "id": "491769129318088714",
+            "username": "Statbot",
+            "avatar": "f23fd300d377ab133db1d6ac7db5d10b",
+            "avatar_decoration": null,
+            "discriminator": "3472",
+            "public_flags": 589824,
+            "bot": true
+        },
+        "mute": false,
+        "deaf": false
+    },
+    {
+        "avatar": null,
+        "communication_disabled_until": null,
+        "flags": 0,
+        "is_pending": false,
+        "joined_at": "2022-12-14T08:24:32.136000+00:00",
+        "nick": null,
+        "pending": false,
+        "premium_since": null,
+        "roles": [],
+        "user": {
+            "id": "824889485564313601",
+            "username": "ankit",
+            "avatar": null,
+            "avatar_decoration": null,
+            "discriminator": "7120",
+            "public_flags": 0
+        },
+        "mute": false,
+        "deaf": false
+    },
+    {
+        "avatar": null,
+        "communication_disabled_until": null,
+        "flags": 0,
+        "is_pending": false,
+        "joined_at": "2022-11-23T08:07:54.816000+00:00",
+        "nick": null,
+        "pending": false,
+        "premium_since": null,
+        "roles": [],
+        "user": {
+            "id": "1005929077770821704",
+            "username": "ronmaa",
+            "avatar": null,
+            "avatar_decoration": null,
+            "discriminator": "3513",
+            "public_flags": 0
+        },
+        "mute": false,
+        "deaf": false
+    },
+    {
+        "avatar": null,
+        "communication_disabled_until": null,
+        "flags": 0,
+        "is_pending": false,
+        "joined_at": "2022-11-23T14:09:03.567000+00:00",
+        "nick": null,
+        "pending": false,
+        "premium_since": null,
+        "roles": [
+            "1044977889206087711"
+        ],
+        "user": {
+            "id": "1044565401255813162",
+            "username": "sender-bot",
+            "avatar": null,
+            "avatar_decoration": null,
+            "discriminator": "7714",
+            "public_flags": 524288,
+            "bot": true
+        },
+        "mute": false,
+        "deaf": false
+    },
+    {
+        "avatar": null,
+        "communication_disabled_until": null,
+        "flags": 0,
+        "is_pending": false,
+        "joined_at": "2022-12-09T12:06:16.927000+00:00",
+        "nick": null,
+        "pending": false,
+        "premium_since": null,
+        "roles": [
+            "1050745196897390666"
+        ],
+        "user": {
+            "id": "1050737728108634243",
+            "username": "getDataApp-bot",
+            "avatar": null,
+            "avatar_decoration": null,
+            "discriminator": "6672",
+            "public_flags": 524288,
+            "bot": true
+        },
+        "mute": false,
+        "deaf": false
+    },
+    {
+        "avatar": null,
+        "communication_disabled_until": null,
+        "flags": 0,
+        "is_pending": false,
+        "joined_at": "2022-12-12T10:38:11.744000+00:00",
+        "nick": null,
+        "pending": false,
+        "premium_since": null,
+        "roles": [],
+        "user": {
+            "id": "1051809596945207337",
+            "username": "trefloMaanas",
+            "avatar": null,
+            "avatar_decoration": null,
+            "discriminator": "1191",
+            "public_flags": 0
+        },
+        "mute": false,
+        "deaf": false
+    }
+]
